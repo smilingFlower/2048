@@ -64,18 +64,22 @@ function  updateBoardView(){
 			var numberCellID = $("#number-cell-"+ i + "-" + j);
 
 
+
 			if ( board[i][j] === 0 ) {
 				numberCellID.css({
 					"display" : "none"
 				})
 			}else{
+
 				numberCellID.css({
 					"display" : "block",
-					"left" : calculateSpacing(i) + "px",
-					"top" : calculateSpacing(j) + "px",
+					"left" : getPositonLeft(i,j) + "px",
+					"top" : getPositonTop(i,j) + "px",
 					"backgroundColor":getNumberBackgroundColor( board[i][j] ),
 					"color":getNumberColor( board[i][j] ),
 				})
+
+				$("#number-cell-"+ i + "-" + j).text(getInitNumber());
 			}//if结束
 
 		}
@@ -86,26 +90,30 @@ function  updateBoardView(){
 function generateNumber(){
 
 	//如果没有位置就不再生成
-	if (isGenerateNumber()) {
+	if (!isGenerateNumber()) {
 		return
 	}
 
 	//位置
-	var line = parseInt(Math.floor(Math.random * 4));
-	var column = parseInt(Math.floor(Math.random * 4));
+	var line = parseInt(Math.floor(Math.random() * 4));
+	var column = parseInt(Math.floor(Math.random() * 4));
 
-	if(isGenerateNumber(line,column)){
-		board[i][j] = getInitNumber();
+	while(!isGenerateNumber(line,column)){
+		line = parseInt(Math.floor(Math.random() * 4));
+		column = parseInt(Math.floor(Math.random() * 4));
 	}
 
-	updateBoardView()
+	board[line][column] = getInitNumber();
+
+	updateBoardView();
+
+	
 }
 
 
 function getInitNumber(){
-	var num;
-	return parseInt(Math.random() * 2) == 2 ? num = 2 : num = 4;
-	return num;
+	// var num = parseInt(Math.random() * 2) == 2 ? num = 2 : num = 4;
+	return 2;
 }
 
 function isGenerateNumber(i,j){
