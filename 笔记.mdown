@@ -6,3 +6,7 @@
 
 ##游戏架构  
 ![图片](images/01.jpg)
+
+
+##moveLeft 
+![图片](images/02.jpg)

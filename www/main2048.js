@@ -18,9 +18,8 @@ function newGame(){
 	init();
 
 	//随机生成两个数
-	generateNumber();
-	generateNumber();
-
+	generateOneNumber();
+	generateOneNumber();
 }
 
 
@@ -48,7 +47,6 @@ function init(){
 	}
 
 	updateBoardView();
-
 }
 
 
@@ -67,70 +65,117 @@ function  updateBoardView(){
 
 			if ( board[i][j] === 0 ) {
 				numberCellID.css({
-					"display" : "none"
+					"width":0,
+					"height":0,
+					"left" : getPositonLeft(i,j) + 50 + "px",
+					"top" : getPositonTop(i,j) + 50 + "px",					
 				})
 			}else{
 
 				numberCellID.css({
-					"display" : "block",
+					"height":"100px",
+					"width":"100px",
 					"left" : getPositonLeft(i,j) + "px",
 					"top" : getPositonTop(i,j) + "px",
 					"backgroundColor":getNumberBackgroundColor( board[i][j] ),
 					"color":getNumberColor( board[i][j] ),
 				})
 
-				$("#number-cell-"+ i + "-" + j).text(getInitNumber());
+				theNumberCell.text( board[i][j] );
+
 			}//if结束
 
 		}
 	}//for结束
-
 }
 
-function generateNumber(){
+function generateOneNumber(){
 
 	//如果没有位置就不再生成
-	if (!isGenerateNumber()) {
-		return
+	if (nospace(board)) return;
+
+  //随机一个位置
+  var randx = parseInt( Math.floor( Math.random()  * 4 ) );
+  var randy = parseInt( Math.floor( Math.random()  * 4 ) );
+
+	while(true){
+		if (board[randx][randy] == 0) break;
+
+  	randx = parseInt( Math.floor( Math.random()  * 4 ) );
+  	randy = parseInt( Math.floor( Math.random()  * 4 ) );
 	}
 
-	//位置
-	var line = parseInt(Math.floor(Math.random() * 4));
-	var column = parseInt(Math.floor(Math.random() * 4));
+	//随机一个数字
+  var randNumber = Math.random() < 0.5 ? 2 : 4;
 
-	while(!isGenerateNumber(line,column)){
-		line = parseInt(Math.floor(Math.random() * 4));
-		column = parseInt(Math.floor(Math.random() * 4));
-	}
+	//在随机位置显示随机数字
+  board[randx][randy] = randNumber;  
 
-	board[line][column] = getInitNumber();
+  showNumberWithAnimation( randx , randy , randNumber );
 
-	updateBoardView();
-
-	
+	return true;	
 }
 
-
-function getInitNumber(){
-	// var num = parseInt(Math.random() * 2) == 2 ? num = 2 : num = 4;
-	return 2;
-}
-
-function isGenerateNumber(i,j){
-	var isGenerateNumber;
-
-	if (typeof i !== "undefined") {
-		return board[i][j] == 0 ? isGenerateNumber = true : isGenerateNumber = false;
-	}
+function moveLeft(){
+	if (!canMoveLeft) return false;
 
 	for (var i = 0; i < 4; i++) {
-	    for( var j = 0 ; j < 4 ; j ++ ){
-	    	if (board[i][j] == 0) {
-	    		isGenerateNumber = true;
-	    		break;
-	    	}
-	    }		
-	}	
+			for (var j = 1; j < 4; j++) {
 
-	return isGenerateNumber ? true : false;
+				if (board[i][j] != 0){
+
+					for (var k = 0; k < j; k++) {					
+						if ( board[i][k] == 0 && noBlockHorizontal( i , k , j , board ) ) {
+
+							showNumberWithAnimation( i , j , i , k );
+							board[i][k] = board[i][j];
+							board[i][j] = 0;
+							continue;
+						
+						}else if( board[i][k] == board[i][j] && noBlockHorizontal( i , k , j , board ) ){
+							//move
+							showNumberWithAnimation( i , j , i , k );
+							board[i][k] += board[i][j];
+							board[i][j] = 0;
+							//叠加
+							continue;
+
+						}//if结束
+					}
+				}
+
+
+			}
+		}	//for i 结束
 }
+
+$(document).keydown(function(event){
+	switch(event.keyCode){
+		case 37: //left
+			if (moveLeft()) {
+				generateOneNumber();
+				isGameOver();
+			}
+			break;
+		case 38: //top
+			if (movetTop()) {
+				generateOneNumber();
+				isGameOver();
+			}		
+			break;
+		case 39: //right
+			if (moveRight()) {
+				generateOneNumber();
+				isGameOver();
+			}		
+			break;			
+		case 40: //向下
+			if (moveDown()) {
+				generateOneNumber();
+				isGameOver();
+			}		
+			break;			
+		default:
+			return
+	}
+})
