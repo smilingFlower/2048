@@ -13,20 +13,20 @@ function showNumberWithAnimation(i,j,randNumber){
   numberCell.animate({
   	"height":"100px",
   	"width":"100px",
-    "top":getPositonTop( i , j ) + "px",
-    "left":getPositonLeft( i , j ) + "px"
+    "top":getPositionTop( i , j ) + "px",
+    "left":getPositionLeft( i , j ) + "px"
   },50);
 }
 
 
 
-function  showNumberWithAnimation( forx , fory , tox , toy ){
+function  showMoveAnimation( forx , fory , tox , toy ){
   var numberCell = $("#number-cell-" + forx + "-" + fory);
 
   numberCell.animate({
-    "top":getPositonTop( tox , toy ) + "px",
-    "left":getPositonLeft( tox , toy ) + "px"
+    "top":getPositionTop( tox , toy ) + "px",
+    "left":getPositionLeft( tox , toy ) + "px"
   },
-    50
+    200
   );
 }

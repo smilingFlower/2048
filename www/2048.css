@@ -61,7 +61,7 @@ header > #score::before{
 .number-cell{
 	position: absolute;
 	
-	font-size: 60px;
+	font-size: 30px;
 	line-height: 100px;
 	text-align: center;
 	font-weight: bold;

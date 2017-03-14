@@ -4,11 +4,11 @@
  */
 
 
-function getPositonTop( i , j ){
+function getPositionTop( i , j ){
     return 20 + i*120;
 }
 
-function getPositonLeft( i , j ){
+function getPositionLeft( i , j ){
     return 20 + j*120;
 }
 
@@ -84,12 +84,12 @@ function nospace(board){
 	return true;
 }
 
-function canMoveLeft(){
+function canMoveLeft(board){
 	for (var i = 0; i < 4; i++) {
 		for (var j = 1; j < 4; j++) {
 
 			if (board[i][j] != 0) {
-				if ( board[i][j-1] == 0 || (board[i][j-1] == board[i][j]) ) {
+				if ( board[i][j-1] == 0 || board[i][j-1] == board[i][j] ) {
 					return true;
 				}
 			}
@@ -100,9 +100,65 @@ function canMoveLeft(){
 	return false;
 }
 
+function canMoveRight(board){
+
+	for (var i = 0; i < 4; i++) {
+		for (var j = 0; j < 3; j++) {
+
+			if (board[i][j] != 0) {
+				if ( board[i][j+1] == 0 || board[i][j+1] == board[i][j] ) {
+					return true;
+				}
+			}
+
+		}
+	}
+
+	if (!nospace(board)) {
+		return true;
+	}
+
+	return false;
+}
+
+
+function canMoveTop(){
+	for (var i = 1; i < 4; i++) {
+		for (var j = 0; j < 4; j++) {
+
+			if (board[i][j] != 0) {
+				if ( board[i-1][j] == 0 || board[i-1][j] == board[i][j] ) {
+					return true;
+				}
+			}
+
+		}
+	}
+
+	return false;
+}
+
+
+function canMoveDown(){
+	for (var i = 0; i < 3; i++) {
+		for (var j = 1; j < 4; j++) {
+
+			if (board[i][j] != 0) {
+				if ( board[i+1][j] == 0 || board[i+1][j] == board[i][j] ) {
+					return true;
+				}
+			}
+
+		}
+	}
+
+	return false;
+}
+
+
 function noBlockHorizontal(row , col1 , col2 , board){
 	for (var i = col1 + 1; i < col2; i++) {
-		if ( board[row][i] == 0) {
+		if ( board[row][i] != 0) {
 			return false
 		}
 	}
@@ -110,3 +166,24 @@ function noBlockHorizontal(row , col1 , col2 , board){
 	return true;
 }
 
+
+function noBlockVertical(col , row1, row1 , board){
+	for (var i = row1 + 1; i < row1; i++) {
+		if ( board[i][col] != 0) {
+			return false
+		}
+	}
+
+	return true;
+}
+
+
+function nomove(){
+	if (canMoveLeft() ||
+			canMoveRight() ||
+			canMoveTop() ||
+			canMoveDown()
+		) return true;
+
+		return false;
+}
