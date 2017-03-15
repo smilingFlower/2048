@@ -32,8 +32,8 @@ function init(){
 			var gridCell = $("#grid-cell-" + i + "-" + j);
 
 			gridCell.css({
-				left:getPositionTop(i,j) + "px",
-				top:getPositionLeft(i,j) + "px"
+				left:getPositionLeft(i,j) + "px",
+				top:getPositionTop(i,j) + "px"
 			});
 			
 		}
@@ -157,7 +157,7 @@ function moveRight(){
 	if (!canMoveRight(board)) return false;
 
 	for (var i = 0; i < 4; i++) {
-			for (var j = 0; j < 3; j++) {
+			for (var j = 2 ; j >= 0 ; j --) {
 
 				if (board[i][j] != 0){
 
@@ -191,11 +191,11 @@ function moveRight(){
 }
 
 
-function moveTop(){
-	if (!canMoveTop(board)) return false;
+function moveUp(){
+	if (!canMoveUp(board)) return false;
 
-	for (var i = 1; i < 4; i++) { 
-			for (var j = 0; j < 4; j++) {
+		for (var j = 0; j < 4; j++) {
+			for (var i = 1; i < 4; i++) { 
 
 				if (board[i][j] != 0){
 
@@ -232,8 +232,8 @@ function moveTop(){
 function moveDown(){
 	if (!canMoveDown(board)) return false;
 
-	for (var i = 1; i < 4; i++) {
-			for (var j = 0; j < 4; j++) {
+		for (var j = 0; j < 4; j++) {
+			for (var i = 2 ; i >= 0 ; i --) { 
 
 				if (board[i][j] != 0){
 
@@ -280,26 +280,26 @@ $(document).keydown(function(event){
 	switch(event.keyCode){
 		case 37: //left
 			if (moveLeft()) {
-				generateOneNumber();
-				isGameOver();
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
 			}
 			break;
 		case 38: //top
-			if (moveTop()) {
-				generateOneNumber();
-				isGameOver();
+			if (moveUp()) {
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
 			}		
 			break;
 		case 39: //right
 			if (moveRight()) {
-				generateOneNumber();
-				isGameOver();
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
 			}		
 			break;			
 		case 40: //向下
 			if (moveDown()) {
-				generateOneNumber();
-				isGameOver();
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
 			}		
 			break;			
 		default:
