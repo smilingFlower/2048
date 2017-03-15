@@ -3,15 +3,39 @@
  * my site: http://www.liuyubobobo.com
  */
 
-var board = new Array(); 
+var board = new Array(); //游戏数据
 var score = 0; //游戏分数
+var hasSuperposition = new Array(); 
+
+var startX,
+		startY,
+		endX,
+		endY;
 
 $(function(){
+	prepareForMobile();
 
 	newGame();
 
 });
 
+function prepareForMobile(){
+
+    if( documentWidth > 500 ){
+        gridContainerWidth = 500;
+        cellSpace = 20;
+        cellSideLength = 100;
+    }
+
+    $('#grid-container').css('width',gridContainerWidth - 2*cellSpace);
+    $('#grid-container').css('height',gridContainerWidth - 2*cellSpace);
+    $('#grid-container').css('padding', cellSpace);
+    $('#grid-container').css('border-radius',0.02*gridContainerWidth);
+
+    $('.grid-cell').css('width',cellSideLength);
+    $('.grid-cell').css('height',cellSideLength);
+    $('.grid-cell').css('border-radius',0.02*cellSideLength);
+}
 
 function newGame(){
 	//初始化棋盘格
@@ -20,6 +44,7 @@ function newGame(){
 	//随机生成两个数
 	generateOneNumber();
 	generateOneNumber();
+
 }
 
 
@@ -41,12 +66,16 @@ function init(){
 
 	for (var i = 0; i < 4; i++) {
 		board[i] = new Array();
+		hasSuperposition[i] = new Array();
     for( var j = 0 ; j < 4 ; j ++ ){
         board[i][j] = 0;
+        hasSuperposition[i][j] = false;
     }		
 	}
 
 	updateBoardView();
+
+	score = 0;
 }
 
 
@@ -57,7 +86,7 @@ function  updateBoardView(){
 	for (var i = 0; i < 4; i++) {
 		for (var j = 0; j < 4; j++) {
 
-			$(".game-container").append("<div class='number-cell' id='number-cell-"+ i + "-" + j +"'></div>");
+			$("#grid-container").append("<div class='number-cell' id='number-cell-"+ i + "-" + j +"'></div>");
 
 			var numberCellID = $("#number-cell-"+ i + "-" + j);
 
@@ -67,14 +96,14 @@ function  updateBoardView(){
 				numberCellID.css({
 					"width":0,
 					"height":0,
-					"left" : getPositionLeft(i,j) + 50 + "px",
-					"top" : getPositionTop(i,j) + 50 + "px",					
+					"left" : getPositionLeft(i,j) + cellSideLength/2 + "px",
+					"top" : getPositionTop(i,j) + cellSideLength/2 + "px",					
 				})
 			}else{
 
 				numberCellID.css({
-					"height":"100px",
-					"width":"100px",
+					"height":cellSideLength + "px",
+					"width":cellSideLength + "px",
 					"left" : getPositionLeft(i,j) + "px",
 					"top" : getPositionTop(i,j) + "px",
 					"backgroundColor":getNumberBackgroundColor( board[i][j] ),
@@ -85,8 +114,13 @@ function  updateBoardView(){
 
 			}//if结束
 
+			hasSuperposition[i][j] = false;
+
 		}
 	}//for结束
+
+  $('.number-cell').css('line-height',cellSideLength+'px');
+  $('.number-cell').css('font-size',0.4*cellSideLength+'px');	
 }
 
 function generateOneNumber(){
@@ -98,11 +132,29 @@ function generateOneNumber(){
   var randx = parseInt( Math.floor( Math.random()  * 4 ) );
   var randy = parseInt( Math.floor( Math.random()  * 4 ) );
 
-	while(true){
+
+  var times = 0;
+
+	while(times < 50){
 		if (board[randx][randy] == 0) break;
 
   	randx = parseInt( Math.floor( Math.random()  * 4 ) );
   	randy = parseInt( Math.floor( Math.random()  * 4 ) );
+
+  	times++;
+	}
+
+	if (times >= 50) {
+		for (var i = 0; i < 4; i++) {
+			for (var j = 0; j < 4; j++) {
+
+				if (board[i][j] == 0) {
+					randx = i;
+					randy = j;
+				}
+
+			}
+		}
 	}
 
 	//随机一个数字
@@ -132,12 +184,17 @@ function moveLeft(){
 							board[i][j] = 0;
 							continue;
 						
-						}else if( board[i][k] == board[i][j] && noBlockHorizontal( i , k , j , board ) ){
+						}else if( board[i][k] == board[i][j] && noBlockHorizontal( i , k , j , board ) && !hasSuperposition[i][k]){
 							//move
 							showMoveAnimation( i , j , i , k );
 							board[i][k] += board[i][j];
 							board[i][j] = 0;
-							//叠加
+
+							score += board[i][k];
+							updateScore(score);
+
+							hasSuperposition[i][k] = true;
+
 							continue;
 
 						}//if结束
@@ -147,6 +204,7 @@ function moveLeft(){
 
 			}
 		}	//for i 结束
+
 
 	setTimeout("updateBoardView()",200);
 
@@ -169,11 +227,17 @@ function moveRight(){
 							board[i][j] = 0;
 							continue;
 						
-						}else if( board[i][k] == board[i][j] && noBlockHorizontal( i , j , k , board ) ){
+						}else if( board[i][k] == board[i][j] && noBlockHorizontal( i , j , k , board ) && !hasSuperposition[i][k] ){
 							//move
 							showMoveAnimation( i , j , i , k );
 							board[i][k] += board[i][j];
 							board[i][j] = 0;
+
+							score += board[i][k];
+							updateScore(score);
+
+							hasSuperposition[i][k] = true;
+
 							//叠加
 							continue;
 
@@ -185,7 +249,9 @@ function moveRight(){
 			}
 		}	//for i 结束
 
+
 	setTimeout("updateBoardView()",200);
+
 
 	return true;
 }
@@ -207,12 +273,17 @@ function moveUp(){
 							board[i][j] = 0;
 							continue;
 						
-						}else if( board[k][j] == board[i][j] && noBlockVertical(j , k , i, board ) ){
+						}else if( board[k][j] == board[i][j] && noBlockVertical(j , k , i, board ) && !hasSuperposition[k][j]){
 							//move
 							showMoveAnimation( i , j , k , j );
 							board[k][j] += board[i][j];
 							board[i][j] = 0;
-							//叠加
+						
+							score += board[i][k];
+							updateScore(score);
+
+							hasSuperposition[k][j] = true;
+
 							continue;
 
 						}//if结束
@@ -222,6 +293,7 @@ function moveUp(){
 
 			}
 		}	//for i 结束
+
 
 	setTimeout("updateBoardView()",200);
 
@@ -245,12 +317,17 @@ function moveDown(){
 							board[i][j] = 0;
 							continue;
 						
-						}else if( board[k][j] == board[i][j] && noBlockVertical(j , i , k, board ) ){
+						}else if( board[k][j] == board[i][j] && noBlockVertical(j , i , k, board ) && !hasSuperposition[k][j]){
 							//move
 							showMoveAnimation( i , j , k , j );
 							board[k][j] += board[i][j];
 							board[i][j] = 0;
-							//叠加
+
+							score += board[i][k];
+							updateScore(score);
+
+							hasSuperposition[k][j] = true;
+
 							continue;
 
 						}//if结束
@@ -260,6 +337,7 @@ function moveDown(){
 
 			}
 		}	//for i 结束
+
 
 	setTimeout("updateBoardView()",200);
 
@@ -276,33 +354,98 @@ function gameOver(){
 	alert("游戏结束");
 }
 
+
 $(document).keydown(function(event){
+
 	switch(event.keyCode){
 		case 37: //left
+			event.preventDefault();
 			if (moveLeft()) {
 				setTimeout("generateOneNumber()",210);
 				setTimeout("isGameOver()",300);
 			}
 			break;
 		case 38: //top
+			event.preventDefault();
 			if (moveUp()) {
 				setTimeout("generateOneNumber()",210);
 				setTimeout("isGameOver()",300);
 			}		
 			break;
 		case 39: //right
+			event.preventDefault();
 			if (moveRight()) {
 				setTimeout("generateOneNumber()",210);
 				setTimeout("isGameOver()",300);
 			}		
 			break;			
 		case 40: //向下
+			event.preventDefault();
 			if (moveDown()) {
 				setTimeout("generateOneNumber()",210);
 				setTimeout("isGameOver()",300);
 			}		
 			break;			
 		default:
-			return
+			break;
 	}
+})
+
+
+document.addEventListener("touchstart",function(event){
+	console.log(event);
+
+	startX = event.touches[0].pageX;
+	startY = event.touches[0].pageY;
+
+})
+
+
+document.addEventListener("touchend",function(event){
+	
+	endX = event.changedTouches[0].pageX;
+	endY = event.changedTouches[0].pageY;
+
+	var deltaX = endX - startX;
+	var deltaY = endY - startY;
+
+	if( Math.abs( deltaX ) < 0.3*documentWidth && Math.abs( deltaY ) < 0.3*documentWidth )
+        return;
+
+	//x
+	if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+		//move right
+		if (deltaX > 0) {
+			if (moveRight()) {
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
+			}
+		}
+		//move left
+		else{
+			if (moveLeft()) {
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
+			}
+		}
+	}
+
+	//y
+	else{
+		//move up
+		if (deltaY < 0) {
+			if (moveUp()) {
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
+			}	
+		}
+		//move down
+		else{
+			if (moveDown()) {
+				setTimeout("generateOneNumber()",210);
+				setTimeout("isGameOver()",300);
+			}	
+		}
+	}
+
 })

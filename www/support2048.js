@@ -2,14 +2,17 @@
  * Created by liuyubobobo on 14-4-11.
  * my site: http://www.liuyubobobo.com
  */
-
+var documentWidth = window.screen.availWidth;
+var gridContainerWidth = 0.92 * documentWidth;
+var cellSideLength = 0.18 * documentWidth;
+var cellSpace = 0.04 * documentWidth;
 
 function getPositionTop( i , j ){
-    return 20 + i*120;
+    return cellSpace + i*(cellSideLength + cellSpace);
 }
 
 function getPositionLeft( i , j ){
-    return 20 + j*120;
+    return cellSpace + j*(cellSideLength + cellSpace);
 }
 
 function getNumberBackgroundColor(number){
@@ -164,7 +167,6 @@ function noBlockHorizontal(row , col1 , col2 , board){
 	return true;
 }
 
-
 function noBlockVertical(col , row1, row2 , board){
 	for (var i = row1 + 1; i < row2; i++) {
 		if ( board[i][col] != 0) {
@@ -184,4 +186,9 @@ function nomove(){
 		) return false;
 
 		return true;
+}
+
+
+function updateScore(score){
+	$("#score").text(score);
 }
