@@ -74,7 +74,6 @@ function getNumberColor( number ){
     return "white";
 }
 
-
 function nospace(board){
 	for (var i = 0; i < 4; i++) {
 	    for( var j = 0 ; j < 4 ; j ++ ){
@@ -122,7 +121,6 @@ function canMoveRight(board){
 	return false;
 }
 
-
 function canMoveUp(){
 	for (var j = 0; j < 4; j++) {
 		for (var i = 1; i < 4; i++) {
@@ -139,7 +137,6 @@ function canMoveUp(){
 	return false;
 }
 
-
 function canMoveDown(){
 	for (var j = 0; j < 4; j++) {
 		for (var i = 2; i >= 0; i--) {
@@ -155,7 +152,6 @@ function canMoveDown(){
 
 	return false;
 }
-
 
 function noBlockHorizontal(row , col1 , col2 , board){
 	for (var i = col1 + 1; i < col2; i++) {
@@ -177,7 +173,6 @@ function noBlockVertical(col , row1, row2 , board){
 	return true;
 }
 
-
 function nomove(){
 	if (canMoveLeft(board) ||
 			canMoveRight(board) ||
@@ -187,7 +182,6 @@ function nomove(){
 
 		return true;
 }
-
 
 function updateScore(score){
 	$("#score").text(score);
